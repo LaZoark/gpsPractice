@@ -1,6 +1,7 @@
 package com.example.gpspractice;
 
 import android.*;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -8,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -16,7 +18,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.appcompat.widget.Toolbar;
+
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -45,9 +49,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        幹就是這邊在智障花我6小時媽的
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         //fab.setOnClickListener(new View.OnClickListener() {
@@ -57,20 +61,22 @@ public class MainActivity extends AppCompatActivity
         //        .setAction("Action", null).show();
         //    }
         //});
-
+        Log.i("tt","testtttt");
         // 取得系統服務的LocationManager物件
         mgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         txv = (TextView) findViewById(R.id.txv);
-
+        txv.setText("...");
         //取得佈局上的 map 元件
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);  //註冊 Google Map onMapReady 事件監聽器
 
         // 檢查若尚未授權, 則向使用者要求定位權限
         checkPermission();
+
     }
 
     @Override
@@ -99,7 +105,7 @@ public class MainActivity extends AppCompatActivity
                 map.clear();
                 map.addMarker(new MarkerOptions()
                         .position(map.getCameraPosition().target)
-                        .title("到此一遊"));
+                        .title("偉銍到此一遊"));
                 break;
             case R.id.satellite:
                 item.setChecked(!item.isChecked()); // 切換功能表項目的打勾狀態
@@ -124,7 +130,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.about:
                 new AlertDialog.Builder(this) // 用交談窗顯示程式版本與版權聲明
                         .setTitle("關於 我的地圖")
-                        .setMessage("我的地圖 體驗版 v1.0\nCopyright 2017 Flag Corp.")
+                        .setMessage("我的破爛地圖 弱智版 v1.0\nCopyright 2021 b0742006.")
                         .setPositiveButton("關閉", null)
                         .show();
                 break;
@@ -132,8 +138,10 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onLocationChanged(Location location) {
+        Log.i("tt","onLocationChanged");
         if(location != null) { // 如果可以取得座標
             txv.setText(String.format("緯度 %.4f, 經度 %.4f (%s 定位 )",
                     location.getLatitude(),  // 目前緯度
@@ -154,17 +162,17 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
+        Log.i("tt","onStatusChanged");
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-
+        Log.i("tt","onProviderEnabled");
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-
+        Log.i("tt","onProviderDisabled");
     }
 
     //檢查若尚未授權, 則向使用者要求定位權限
@@ -198,7 +206,7 @@ public class MainActivity extends AppCompatActivity
                 //檢查 GPS 與網路定位是否可用
                 isGPSEnabled = mgr.isProviderEnabled(LocationManager.GPS_PROVIDER);
                 isNetworkEnabled = mgr.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
+                txv.setText("dddd");
                 if (!isGPSEnabled && !isNetworkEnabled) {
                     // 無提供者, 顯示提示訊息
                     Toast.makeText(this, "請確認已開啟定位功能!", Toast.LENGTH_LONG).show();
@@ -215,6 +223,7 @@ public class MainActivity extends AppCompatActivity
             }
             else {
                 mgr.removeUpdates(this);    //停止監聽位置事件
+                txv.setText("removeUpdates");
             }
         }
     }
